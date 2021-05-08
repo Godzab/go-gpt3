@@ -2,6 +2,7 @@ package gpt3
 
 import (
 	"fmt"
+	"os"
 )
 
 const (
@@ -16,13 +17,24 @@ const (
 	CONTENT_FILTER_ALPHA_C4 = "content-filter-alpha"
 )
 
+const (
+	getRequest  = "GET"
+	postRequest = "POST"
+)
+
+const (
+	ANSWERS         = "answers"
+	SEARCH          = "search"
+	CLASSIFICATIONS = "classifications"
+)
+
 type RequestConfig struct {
 	endpointVersion, baseUrl, engine string
 }
 
 type Request interface {
 	attachResponse() Response
-	getRequestUrl(config RequestConfig) string
+	getRequestMeta(config RequestConfig) (string, string)
 }
 
 type Response interface {
@@ -70,15 +82,22 @@ type ClassificationExamples struct {
 	Label string `json:"label"`
 }
 
+type Engine struct {
+	ID     string `json:"id"`
+	Object string `json:"object"`
+	Owner  string `json:"owner"`
+	Ready  bool   `json:"ready"`
+}
+
 // Files models
-type Files struct{}
+type FilesRequest struct{}
 
 type FilesResponse struct {
 	Data   []File `json:"data"`
 	Object string `json:"object"`
 }
 
-func (r *Files) attachResponse() Response {
+func (r *FilesRequest) attachResponse() Response {
 	resp := &FilesResponse{}
 	return resp
 }
@@ -87,25 +106,48 @@ func (r *FilesResponse) GetBody() Response {
 	return r
 }
 
-func (r *Files) getRequestUrl(config RequestConfig) string {
-	return fmt.Sprintf("%s/%s/files", config.baseUrl, config.endpointVersion)
+func (r *FilesRequest) getRequestMeta(config RequestConfig) (string, string) {
+	return getRequest, fmt.Sprintf("%s/%s/files", config.baseUrl, config.endpointVersion)
+}
+
+// File models
+type FileRequest struct{
+	File os.File `json:"file"`
+	Purpose string `json:"purpose"`
+}
+
+type FileResponse struct {
+	File
+}
+
+func (r *FileRequest) attachResponse() Response {
+	resp := &FileResponse{}
+	return resp
+}
+
+func (r *FileResponse) GetBody() Response {
+	return r
+}
+
+func (r *FileRequest) getRequestMeta(config RequestConfig) (string, string) {
+	return postRequest, fmt.Sprintf("%s/%s/files", config.baseUrl, config.endpointVersion)
 }
 
 // CompletionRequest Completion model structures
 type CompletionRequest struct {
 	Prompt           string          `json:"prompt"`
 	MaxTokens        int             `json:"max_tokens"`
-	Temperature      float32         `json:"temperature"`
-	TopP             float32         `json:"top_p"`
-	N                int             `json:"n"`
+	Temperature      float32         `json:"temperature,omitempty"`
+	TopP             float32         `json:"top_p,omitempty"`
+	N                int             `json:"n,omitempty"`
 	Stream           bool            `json:"stream"`
-	Logprobs         int             `json:"logprobs"`
-	Stop             []string        `json:"stop"`
-	Echo             bool            `json:"echo"`
-	PresencePenalty  float32         `json:"presence_penalty"`
-	FrequencyPenalty float32         `json:"frequency_penalty"`
-	BestOf           float32         `json:"best_of"`
-	LogitBias        map[string]int8 `json:"logit_bias"`
+	Logprobs         int             `json:"logprobs,omitempty"`
+	Stop             []string        `json:"stop,omitempty"`
+	Echo             bool            `json:"echo,omitempty"`
+	PresencePenalty  float32         `json:"presence_penalty,omitempty"`
+	FrequencyPenalty float32         `json:"frequency_penalty,omitempty"`
+	BestOf           float32         `json:"best_of,omitempty"`
+	LogitBias        map[string]int8 `json:"logit_bias,omitempty"`
 }
 
 type CompletionResponse struct {
@@ -121,8 +163,8 @@ func (r *CompletionRequest) attachResponse() Response {
 	return resp
 }
 
-func (r *CompletionRequest) getRequestUrl(config RequestConfig) string {
-	return fmt.Sprintf("%s/%s/engines/%s/completions", config.baseUrl, config.endpointVersion, config.engine)
+func (r *CompletionRequest) getRequestMeta(config RequestConfig) (string, string) {
+	return postRequest, fmt.Sprintf("%s/%s/engines/%s/completions", config.baseUrl, config.endpointVersion, config.engine)
 }
 
 func (r *CompletionResponse) GetBody() Response {
@@ -132,11 +174,11 @@ func (r *CompletionResponse) GetBody() Response {
 // SearchRequest Search Model structures
 type SearchRequest struct {
 	target         string
-	Documents      []string `json:"documents"`
+	Documents      []string `json:"documents,omitempty"`
 	Query          string   `json:"query"`
-	File           string   `json:"file"`
+	File           string   `json:"file,omitempty"`
 	ReturnMetadata bool     `json:"return_metadata"`
-	MaxRerank      int32    `json:"max_rerank"`
+	MaxRerank      int32    `json:"max_rerank,omitempty"`
 }
 
 type SearchResponse struct {
@@ -149,17 +191,36 @@ func (r *SearchRequest) attachResponse() Response {
 	return resp
 }
 
-func (r *SearchRequest) getRequestUrl(config RequestConfig) string {
-	return fmt.Sprintf("%s/%s/engines/%s/search", config.baseUrl, config.endpointVersion, config.engine)
+func (r *SearchRequest) getRequestMeta(config RequestConfig) (string, string) {
+	return postRequest, fmt.Sprintf("%s/%s/engines/%s/search", config.baseUrl, config.endpointVersion, config.engine)
 }
 
 func (r *SearchResponse) GetBody() Response {
 	return r
 }
 
+type EnginesRequest struct{}
+
+type EnginesResponse struct {
+	Data   []interface{} `json:"data"`
+	Object string        `json:"object"`
+}
+
+func (e EnginesResponse) GetBody() Response {
+	return e
+}
+
+func (r *EnginesRequest) attachResponse() Response {
+	resp := &EnginesResponse{}
+	return resp
+}
+
+func (r *EnginesRequest) getRequestMeta(config RequestConfig) (string, string) {
+	return getRequest, fmt.Sprintf("%s/%s/engines", config.baseUrl, config.endpointVersion)
+}
+
 // ClassificationRequest Classification Model structures
 type ClassificationRequest struct {
-	target         string
 	Examples       [][]string      `json:"examples"`
 	Labels         []string        `json:"labels"`
 	Query          string          `json:"query"`
@@ -167,12 +228,12 @@ type ClassificationRequest struct {
 	SearchModel    string          `json:"search_model"`
 	Model          string          `json:"model"`
 	Temperature    float32         `json:"temperature"`
-	Logprobs       interface{}     `json:"logprobs"`
+	Logprobs       interface{}     `json:"logprobs,omitempty"`
 	MaxExamples    int32           `json:"max_examples"`
-	LogitBias      map[string]int8 `json:"logit_bias"`
-	ReturnPrompt   bool            `json:"return_prompt"`
-	ReturnMetadata bool            `json:"return_metadata"`
-	Expand         []interface{}   `json:"expand"`
+	LogitBias      map[string]int8 `json:"logit_bias,omitempty"`
+	ReturnPrompt   bool            `json:"return_prompt,omitempty"`
+	ReturnMetadata bool            `json:"return_metadata,omitempty"`
+	Expand         []string        `json:"expand,omitempty"`
 }
 
 type ClassificationResponse struct {
@@ -189,8 +250,8 @@ func (r *ClassificationRequest) attachResponse() Response {
 	return resp
 }
 
-func (r *ClassificationRequest) getRequestUrl(config RequestConfig) string {
-	return fmt.Sprintf("%s/%s/classifications", config.baseUrl, config.endpointVersion)
+func (r *ClassificationRequest) getRequestMeta(config RequestConfig) (string, string) {
+	return postRequest, fmt.Sprintf("%s/%s/classifications", config.baseUrl, config.endpointVersion)
 }
 
 func (r *ClassificationResponse) GetBody() Response {
@@ -199,7 +260,6 @@ func (r *ClassificationResponse) GetBody() Response {
 
 // AnswerRequest Answer Model structures
 type AnswerRequest struct {
-	target          string
 	Documents       []string        `json:"documents"`
 	Question        string          `json:"question"`
 	SearchModel     string          `json:"search_model"`
@@ -233,17 +293,35 @@ func (r *AnswerRequest) attachResponse() Response {
 	return resp
 }
 
-func (r *AnswerRequest) getRequestUrl(config RequestConfig) string {
-	return fmt.Sprintf("%s/%s/answers", config.baseUrl, config.endpointVersion)
+func (r *AnswerRequest) getRequestMeta(config RequestConfig) (string, string) {
+	return postRequest, fmt.Sprintf("%s/%s/answers", config.baseUrl, config.endpointVersion)
 }
 
 func (r *AnswerResponse) GetBody() Response {
 	return r
 }
 
-type Error struct {
+//GptErrorResponse Error handling for client calls
+type GptErrorResponse struct {
 	Code    interface{} `json:"code"`
 	Message string      `json:"message"`
-	Param   interface{} `json:"param"`
+	Param   string      `json:"param"`
 	Type    string      `json:"type"`
+}
+
+type ErrorBag struct {
+	Err GptErrorResponse `json:"error"`
+}
+
+func (e ErrorBag) Error() string {
+	return fmt.Sprintf("[GPT ERROR] %v:  %s %s %v",
+		e.Err.Code, e.Err.Type, e.Err.Param, e.Err.Message)
+}
+
+func (e ErrorBag) Timeout() bool {
+	return true
+}
+
+func (e ErrorBag) Temporary() bool {
+	return true
 }

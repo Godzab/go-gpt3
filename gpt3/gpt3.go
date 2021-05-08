@@ -31,6 +31,9 @@ type ApiClient struct {
 }
 
 func (a ApiClient) Call(request Request) (*Response, error) {
+	var err error
+	var req *http.Request
+
 	config := RequestConfig{
 		endpointVersion: defaultVersion,
 		baseUrl:         baseUrl,
@@ -43,8 +46,14 @@ func (a ApiClient) Call(request Request) (*Response, error) {
 		return nil, err
 	}
 
-	requestUrl := request.getRequestUrl(config)
-	req, err := http.NewRequest("POST", requestUrl, bytes.NewBuffer(jsonStr))
+	requestMethod, requestUrl := request.getRequestMeta(config)
+
+	if requestMethod == getRequest{
+		req, err = http.NewRequest(requestMethod, requestUrl, nil)
+	} else {
+		req, err = http.NewRequest(requestMethod, requestUrl, bytes.NewBuffer(jsonStr))
+	}
+
 	if err != nil {
 		_ = fmt.Errorf("Http Request creation error: %s\n", err)
 		return nil, err
@@ -64,7 +73,13 @@ func (a ApiClient) Call(request Request) (*Response, error) {
 
 	respObj := request.attachResponse()
 	data, err := io.ReadAll(resp.Body)
-	fmt.Println(string(data))
+
+	if resp.StatusCode != http.StatusOK{
+		_ = fmt.Errorf("Http response user error %d\n", resp.StatusCode)
+		errObj := ErrorBag{}
+		json.Unmarshal(data, &errObj)
+		return nil, errObj
+	}
 
 	if err := json.Unmarshal(data, respObj); err != nil {
 		_ = fmt.Errorf("Http response unmarshal error: %s\n", err)

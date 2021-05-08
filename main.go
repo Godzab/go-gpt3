@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"github.com/Godzab/go-gpt3/gpt3"
 	"io/ioutil"
+	"log"
 )
 
 func main() {
-	answersCall()
+	completionCall()
+	//FilesCall()
+	//FileCall()
 }
 
 
@@ -43,19 +46,18 @@ func answersCall(){
 }
 
 func completionCall(){
-	query, err := ioutil.ReadFile("file.txt")
+	query, err := ioutil.ReadFile("prompts.txt")
 	if err != nil {
 		panic(err)
 	}
 	req := gpt3.CompletionRequest{
 		Prompt:      string(query),
-		MaxTokens:   64,
+		MaxTokens:   60,
 		TopP:        1,
-		Temperature: 1,
-		N: 1,
-		BestOf: 1,
+		Temperature: 0.3,
 		FrequencyPenalty: 0.5,
-		PresencePenalty: 0.6,
+		PresencePenalty: 0,
+		Stop: []string{"You:"},
 	}
 
 	cl := gpt3.ApiClient{}
@@ -63,13 +65,71 @@ func completionCall(){
 
 	response, err := cl.Call(&req)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	data := *response
 	results, _ := data.(*gpt3.CompletionResponse)
 
 	for _,t  := range results.Choices{
-		fmt.Println(t.Text)
+		fmt.Println(t)
+	}
+}
+
+func SearchCall(){
+	req := gpt3.SearchRequest{
+		Documents:      []string{"White House","hospital","school","City"},
+		Query:          "the headmaster",
+	}
+
+	cl := gpt3.ApiClient{}
+	cl.Setup(gpt3.DAVINCI, gpt3.DAVINCI_INSTRUCT_BETA)
+
+	response, err := cl.Call(&req)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	data := *response
+	results, _ := data.(*gpt3.SearchResponse)
+
+	for _,t  := range results.Data{
+		fmt.Println(t)
+	}
+}
+
+func EnginesCall(){
+	req := gpt3.EnginesRequest{}
+	cl := gpt3.ApiClient{}
+	cl.Setup(gpt3.DAVINCI)
+
+	response, err := cl.Call(&req)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	data := *response
+	results, _ := data.(*gpt3.EnginesResponse)
+
+	for _,t  := range results.Data{
+		fmt.Println(t)
+	}
+}
+
+func FilesCall(){
+	req := gpt3.FilesRequest{}
+	cl := gpt3.ApiClient{}
+	cl.Setup(gpt3.CURIE)
+
+	response, err := cl.Call(&req)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	data := *response
+	results, _ := data.(*gpt3.FilesResponse)
+
+	for _,t  := range results.Data{
+		fmt.Println(t)
 	}
 }
