@@ -1,3 +1,21 @@
+//Package gpt3 provides access to the the GPT3 completions Api
+//along with new beta APIs for classification, enhanced search, and question answering.
+//
+//The underlying structure is defined along a request / response interface pattern with a
+//singular call to the client.
+//The request is initialised as per required parameters an example being:
+//
+//	req := gpt3.CompletionRequest{
+//		Prompt:      string(query),
+//		MaxTokens:   60,
+//		TopP:        1,
+//		Temperature: 0.3,
+//		FrequencyPenalty: 0.5,
+//		PresencePenalty: 0,
+//		Stop: []string{"You:"},
+//	}
+//
+//
 package gpt3
 
 import (
