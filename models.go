@@ -14,7 +14,7 @@ const (
 	DAVINCI_INSTRUCT_BETA   = "davinci-instruct-beta"
 	CURSING_FILTER_V6       = "cursing-filter-v6"
 	CONTENT_FILTER_DEV      = "content-filter-dev"
-	CONTENT_FILTER_ALPHA_C4 = "content-filter-alpha"
+	CONTENT_FILTER_ALPHA_C4 = "content-filter-alpha-c4"
 )
 //
 const (

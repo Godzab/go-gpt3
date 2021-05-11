@@ -23,7 +23,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"sync"
@@ -108,12 +107,10 @@ func (a ApiClient) Call(request Request) (*Response, error) {
 
 func (a *ApiClient) Setup(engines ...string) *ApiClient {
 	once.Do(func() {
-		a.apiKey = os.Getenv(apiKeyName)
-		if a.apiKey == "" {
-			log.Fatalf(apiKeyMissingError, apiKeyName)
-		}
+		//Perform single action initialisations
 	})
-	//TODO: For concurrent calls to different engines for the same request
+
+	a.apiKey = os.Getenv(apiKeyName)
 	a.engines = append(a.engines, engines...)
 	return a
 }
