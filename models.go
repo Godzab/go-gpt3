@@ -171,6 +171,27 @@ func (r *CompletionResponse) GetBody() Response {
 	return r
 }
 
+//ContentFilterRequest Content filter model structures
+type ContentFilterRequest struct{
+	Prompt           string          `json:"prompt"`
+	MaxTokens        int             `json:"max_tokens"`
+	Temperature      float32         `json:"temperature,omitempty"`
+	TopP             float32         `json:"top_p,omitempty"`
+	N                int             `json:"n,omitempty"`
+	Logprobs         int             `json:"logprobs,omitempty"`
+	PresencePenalty  float32         `json:"presence_penalty,omitempty"`
+	FrequencyPenalty float32         `json:"frequency_penalty,omitempty"`
+}
+
+func (r *ContentFilterRequest) attachResponse() Response {
+	resp := &CompletionResponse{}
+	return resp
+}
+
+func (r *ContentFilterRequest) getRequestMeta(config RequestConfig) (string, string) {
+	return postRequest, fmt.Sprintf("%s/%s/engines/content-filter-alpha-c4/completions", config.baseUrl, config.endpointVersion)
+}
+
 // SearchRequest Search Model structures
 type SearchRequest struct {
 	target         string

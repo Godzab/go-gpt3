@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/Godzab/go-gpt3"
 	"io/ioutil"
@@ -8,7 +9,8 @@ import (
 )
 
 func main() {
-	completionCall()
+	contentFilterCall()
+	//completionCall()
 	//answersCall()
 	//SearchCall()
 	//FilesCall()
@@ -134,4 +136,36 @@ func FilesCall(){
 	for _,t  := range results.Data{
 		fmt.Println(t)
 	}
+}
+
+
+func contentFilterCall(){
+	query, err := ioutil.ReadFile("prompts.txt")
+	if err != nil {
+		panic(err)
+	}
+	reformattedPrompt := fmt.Sprintf("<|endoftext|>[%s]\n--\nLabel:", string(query))
+	req := gpt3.ContentFilterRequest{
+		Prompt:      reformattedPrompt,
+		MaxTokens:   1,
+		TopP:        0,
+		Temperature: 0,
+		Logprobs: 10,
+	}
+
+	cl := gpt3.ApiClient{}
+	cl.Setup(gpt3.DAVINCI_INSTRUCT_BETA, gpt3.DAVINCI)
+
+	response, err := cl.Call(&req)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	data := *response
+	results, _ := data.(*gpt3.CompletionResponse)
+	jsn, err := json.MarshalIndent(results, "", "  ")
+	if err != nil{
+		log.Fatalln(err)
+	}
+	fmt.Print(string(jsn), "\n")
 }
