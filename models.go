@@ -6,16 +6,28 @@ import (
 )
 
 const (
-	DAVINCI                 = "davinci"
-	CURIE                   = "curie"
-	BABBAGE                 = "babbage"
-	ADA                     = "ada"
-	CURIE_INSTRUCT_BETA     = "curie-instruct-beta"
-	DAVINCI_INSTRUCT_BETA   = "davinci-instruct-beta"
+	DAVINCI               = "davinci"
+	CURIE                 = "curie"
+	BABBAGE               = "babbage"
+	ADA                   = "ada"
+	CURIE_INSTRUCT_BETA   = "curie-instruct-beta"
+	DAVINCI_INSTRUCT_BETA = "davinci-instruct-beta"
+
+	// CURSING_FILTER_V6 Content filters moderate output and input to the api to
+	//avoid negative content generation
 	CURSING_FILTER_V6       = "cursing-filter-v6"
 	CONTENT_FILTER_DEV      = "content-filter-dev"
 	CONTENT_FILTER_ALPHA_C4 = "content-filter-alpha-c4"
+
+	// DAVINCI_CODEX Codex engines for code generation.
+	//Davinci Codex is more capable, particularly for translating natural language to code
+	DAVINCI_CODEX = "davinci-codex"
+
+	// CUSHMAN_CODEX Cushman Codex is almost as capable, but slightly faster.
+	//This speed advantage may be preferable for real-time applications.
+	CUSHMAN_CODEX = "cushman-codex"
 )
+
 //
 const (
 	getRequest  = "GET"
@@ -111,9 +123,9 @@ func (r *FilesRequest) getRequestMeta(config RequestConfig) (string, string) {
 }
 
 // File models
-type FileRequest struct{
-	File os.File `json:"file"`
-	Purpose string `json:"purpose"`
+type FileRequest struct {
+	File    os.File `json:"file"`
+	Purpose string  `json:"purpose"`
 }
 
 type FileResponse struct {
@@ -172,15 +184,15 @@ func (r *CompletionResponse) GetBody() Response {
 }
 
 //ContentFilterRequest Content filter model structures
-type ContentFilterRequest struct{
-	Prompt           string          `json:"prompt"`
-	MaxTokens        int             `json:"max_tokens"`
-	Temperature      float32         `json:"temperature,omitempty"`
-	TopP             float32         `json:"top_p,omitempty"`
-	N                int             `json:"n,omitempty"`
-	Logprobs         int             `json:"logprobs,omitempty"`
-	PresencePenalty  float32         `json:"presence_penalty,omitempty"`
-	FrequencyPenalty float32         `json:"frequency_penalty,omitempty"`
+type ContentFilterRequest struct {
+	Prompt           string  `json:"prompt"`
+	MaxTokens        int     `json:"max_tokens"`
+	Temperature      float32 `json:"temperature,omitempty"`
+	TopP             float32 `json:"top_p,omitempty"`
+	N                int     `json:"n,omitempty"`
+	Logprobs         int     `json:"logprobs,omitempty"`
+	PresencePenalty  float32 `json:"presence_penalty,omitempty"`
+	FrequencyPenalty float32 `json:"frequency_penalty,omitempty"`
 }
 
 func (r *ContentFilterRequest) attachResponse() Response {

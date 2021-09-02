@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	contentFilterCall()
+	completionCodexCall()
+	//contentFilterCall()
 	//completionCall()
 	//answersCall()
 	//SearchCall()
@@ -66,6 +67,36 @@ func completionCall(){
 
 	cl := gpt3.ApiClient{}
 	cl.Setup(gpt3.DAVINCI_INSTRUCT_BETA, gpt3.DAVINCI)
+
+	response, err := cl.Call(&req)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	data := *response
+	results, _ := data.(*gpt3.CompletionResponse)
+
+	for _,t  := range results.Choices{
+		fmt.Println(t)
+	}
+}
+
+func completionCodexCall(){
+	query, err := ioutil.ReadFile("prompts.txt")
+	if err != nil {
+		panic(err)
+	}
+	req := gpt3.CompletionRequest{
+		Prompt:      string(query),
+		MaxTokens:   300,
+		TopP:        1,
+		Temperature: 0.5,
+		FrequencyPenalty: 0.5,
+		PresencePenalty: 0,
+	}
+
+	cl := gpt3.ApiClient{}
+	cl.Setup(gpt3.DAVINCI_CODEX)
 
 	response, err := cl.Call(&req)
 	if err != nil {

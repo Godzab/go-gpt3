@@ -36,6 +36,11 @@
 // 2 => This text is unsafe. This means that the text contains profane language, prejudiced or hateful language,
 //      something that could be NSFW, or text that portrays certain groups/people in a harmful manner.
 //
+// Code Generation:
+//
+// Added to the completions API are the codex engines for code generation.
+// The Codex model series is a descendant of our base GPT-3 series that’s been trained on both
+// natural language and billions of lines of code.
 
 package gpt3
 
