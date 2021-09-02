@@ -41,7 +41,7 @@ response, err := cl.Call(&req)
 
 ## Support
 - List Engines API
-- Completion API
+- Completion API (CODEX Engines Support Available)
 - Document Search API
 - Files List API
 - Answers API
