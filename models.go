@@ -9,9 +9,11 @@ const (
 	DAVINCI               = "davinci"
 	CURIE                 = "curie"
 	BABBAGE               = "babbage"
+	BABBAGE_INSTRUCT_BETA = "babbage-instruct-beta"
 	ADA                   = "ada"
-	CURIE_INSTRUCT_BETA   = "curie-instruct-beta"
-	DAVINCI_INSTRUCT_BETA = "davinci-instruct-beta"
+	ADA_INSTRUCT_BETA     = "ada-instruct-beta"
+	CURIE_INSTRUCT_BETA   = "curie-instruct-beta-v2"
+	DAVINCI_INSTRUCT_BETA = "davinci-instruct-beta-v3"
 
 	// CURSING_FILTER_V6 Content filters moderate output and input to the api to
 	//avoid negative content generation
