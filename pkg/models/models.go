@@ -1,4 +1,4 @@
-package gpt3
+package models
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	DAVINCI               = "davinci"
+	DAVINCI               = "text-davinci-002"
 	CURIE                 = "curie"
 	BABBAGE               = "babbage"
 	BABBAGE_INSTRUCT_BETA = "text-babbage-001"
@@ -30,7 +30,6 @@ const (
 	CUSHMAN_CODEX = "cushman-codex"
 )
 
-//
 const (
 	getRequest  = "GET"
 	postRequest = "POST"
@@ -43,12 +42,12 @@ const (
 )
 
 type RequestConfig struct {
-	endpointVersion, baseUrl, engine string
+	EndpointVersion, BaseUrl, Engine string
 }
 
 type Request interface {
-	attachResponse() Response
-	getRequestMeta(config RequestConfig) (string, string)
+	AttachResponse() Response
+	GetRequestMeta(config RequestConfig) (string, string)
 }
 
 type Response interface {
@@ -121,7 +120,7 @@ func (r *FilesResponse) GetBody() Response {
 }
 
 func (r *FilesRequest) getRequestMeta(config RequestConfig) (string, string) {
-	return getRequest, fmt.Sprintf("%s/%s/files", config.baseUrl, config.endpointVersion)
+	return getRequest, fmt.Sprintf("%s/%s/files", config.BaseUrl, config.EndpointVersion)
 }
 
 // File models
@@ -144,7 +143,7 @@ func (r *FileResponse) GetBody() Response {
 }
 
 func (r *FileRequest) getRequestMeta(config RequestConfig) (string, string) {
-	return postRequest, fmt.Sprintf("%s/%s/files", config.baseUrl, config.endpointVersion)
+	return postRequest, fmt.Sprintf("%s/%s/files", config.BaseUrl, config.EndpointVersion)
 }
 
 // CompletionRequest Completion model structures
@@ -178,14 +177,14 @@ func (r *CompletionRequest) attachResponse() Response {
 }
 
 func (r *CompletionRequest) getRequestMeta(config RequestConfig) (string, string) {
-	return postRequest, fmt.Sprintf("%s/%s/engines/%s/completions", config.baseUrl, config.endpointVersion, config.engine)
+	return postRequest, fmt.Sprintf("%s/%s/engines/%s/completions", config.BaseUrl, config.EndpointVersion, config.Engine)
 }
 
 func (r *CompletionResponse) GetBody() Response {
 	return r
 }
 
-//ContentFilterRequest Content filter model structures
+// ContentFilterRequest Content filter model structures
 type ContentFilterRequest struct {
 	Prompt           string  `json:"prompt"`
 	MaxTokens        int     `json:"max_tokens"`
@@ -203,7 +202,7 @@ func (r *ContentFilterRequest) attachResponse() Response {
 }
 
 func (r *ContentFilterRequest) getRequestMeta(config RequestConfig) (string, string) {
-	return postRequest, fmt.Sprintf("%s/%s/engines/content-filter-alpha-c4/completions", config.baseUrl, config.endpointVersion)
+	return postRequest, fmt.Sprintf("%s/%s/engines/content-filter-alpha-c4/completions", config.BaseUrl, config.EndpointVersion)
 }
 
 // SearchRequest Search Model structures
@@ -227,7 +226,7 @@ func (r *SearchRequest) attachResponse() Response {
 }
 
 func (r *SearchRequest) getRequestMeta(config RequestConfig) (string, string) {
-	return postRequest, fmt.Sprintf("%s/%s/engines/%s/search", config.baseUrl, config.endpointVersion, config.engine)
+	return postRequest, fmt.Sprintf("%s/%s/engines/%s/search", config.BaseUrl, config.EndpointVersion, config.Engine)
 }
 
 func (r *SearchResponse) GetBody() Response {
@@ -251,7 +250,7 @@ func (r *EnginesRequest) attachResponse() Response {
 }
 
 func (r *EnginesRequest) getRequestMeta(config RequestConfig) (string, string) {
-	return getRequest, fmt.Sprintf("%s/%s/engines", config.baseUrl, config.endpointVersion)
+	return getRequest, fmt.Sprintf("%s/%s/engines", config.BaseUrl, config.EndpointVersion)
 }
 
 // ClassificationRequest Classification Model structures
@@ -286,7 +285,7 @@ func (r *ClassificationRequest) attachResponse() Response {
 }
 
 func (r *ClassificationRequest) getRequestMeta(config RequestConfig) (string, string) {
-	return postRequest, fmt.Sprintf("%s/%s/classifications", config.baseUrl, config.endpointVersion)
+	return postRequest, fmt.Sprintf("%s/%s/classifications", config.BaseUrl, config.EndpointVersion)
 }
 
 func (r *ClassificationResponse) GetBody() Response {
@@ -329,14 +328,14 @@ func (r *AnswerRequest) attachResponse() Response {
 }
 
 func (r *AnswerRequest) getRequestMeta(config RequestConfig) (string, string) {
-	return postRequest, fmt.Sprintf("%s/%s/answers", config.baseUrl, config.endpointVersion)
+	return postRequest, fmt.Sprintf("%s/%s/answers", config.BaseUrl, config.EndpointVersion)
 }
 
 func (r *AnswerResponse) GetBody() Response {
 	return r
 }
 
-//GptErrorResponse Error handling for client calls
+// GptErrorResponse Error handling for client calls
 type GptErrorResponse struct {
 	Code    interface{} `json:"code"`
 	Message string      `json:"message"`

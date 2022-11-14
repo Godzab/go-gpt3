@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Godzab/go-gpt3"
+	"github.com/Godzab/go-gpt3/cmd"
 	"io/ioutil"
 	"log"
 )
@@ -18,14 +19,13 @@ func main() {
 	//EnginesCall()
 }
 
-
-func answersCall(){
+func answersCall() {
 	examples := make([][]string, 1)
-	data1 := []string{"What is human life expectancy in the United States?","78 years."}
+	data1 := []string{"What is human life expectancy in the United States?", "78 years."}
 	examples[0] = data1
 
 	req := gpt3.AnswerRequest{
-		Documents:       []string{"Puppy A is happy.","Puppy B is sad."},
+		Documents:       []string{"Puppy A is happy.", "Puppy B is sad."},
 		Question:        "which puppy is happy?",
 		SearchModel:     gpt3.ADA,
 		Model:           gpt3.CURIE,
@@ -37,7 +37,7 @@ func answersCall(){
 		N:               1,
 	}
 
-	cl := gpt3.ApiClient{}
+	cl := cmd.ApiClient{}
 	cl.Setup(gpt3.ADA, gpt3.DAVINCI)
 
 	response, err := cl.Call(&req)
@@ -50,22 +50,22 @@ func answersCall(){
 	fmt.Println(results)
 }
 
-func completionCall(){
+func completionCall() {
 	query, err := ioutil.ReadFile("prompts.txt")
 	if err != nil {
 		panic(err)
 	}
 	req := gpt3.CompletionRequest{
-		Prompt:      string(query),
-		MaxTokens:   60,
-		TopP:        1,
-		Temperature: 0.3,
+		Prompt:           string(query),
+		MaxTokens:        60,
+		TopP:             1,
+		Temperature:      0.3,
 		FrequencyPenalty: 0.5,
-		PresencePenalty: 0,
-		Stop: []string{"You:"},
+		PresencePenalty:  0,
+		Stop:             []string{"You:"},
 	}
 
-	cl := gpt3.ApiClient{}
+	cl := cmd.ApiClient{}
 	cl.Setup(gpt3.DAVINCI_INSTRUCT_BETA, gpt3.DAVINCI)
 
 	response, err := cl.Call(&req)
@@ -76,26 +76,26 @@ func completionCall(){
 	data := *response
 	results, _ := data.(*gpt3.CompletionResponse)
 
-	for _,t  := range results.Choices{
+	for _, t := range results.Choices {
 		fmt.Println(t)
 	}
 }
 
-func completionCodexCall(){
+func completionCodexCall() {
 	query, err := ioutil.ReadFile("prompts.txt")
 	if err != nil {
 		panic(err)
 	}
 	req := gpt3.CompletionRequest{
-		Prompt:      string(query),
-		MaxTokens:   300,
-		TopP:        1,
-		Temperature: 0.5,
+		Prompt:           string(query),
+		MaxTokens:        300,
+		TopP:             1,
+		Temperature:      0.5,
 		FrequencyPenalty: 0.5,
-		PresencePenalty: 0,
+		PresencePenalty:  0,
 	}
 
-	cl := gpt3.ApiClient{}
+	cl := cmd.ApiClient{}
 	cl.Setup(gpt3.DAVINCI_CODEX)
 
 	response, err := cl.Call(&req)
@@ -106,18 +106,18 @@ func completionCodexCall(){
 	data := *response
 	results, _ := data.(*gpt3.CompletionResponse)
 
-	for _,t  := range results.Choices{
+	for _, t := range results.Choices {
 		fmt.Println(t)
 	}
 }
 
-func SearchCall(){
+func SearchCall() {
 	req := gpt3.SearchRequest{
-		Documents:      []string{"White House","hospital","school","City"},
-		Query:          "the headmaster",
+		Documents: []string{"White House", "hospital", "school", "City"},
+		Query:     "the headmaster",
 	}
 
-	cl := gpt3.ApiClient{}
+	cl := cmd.ApiClient{}
 	cl.Setup(gpt3.DAVINCI, gpt3.DAVINCI_INSTRUCT_BETA)
 
 	response, err := cl.Call(&req)
@@ -128,14 +128,14 @@ func SearchCall(){
 	data := *response
 	results, _ := data.(*gpt3.SearchResponse)
 
-	for _,t  := range results.Data{
+	for _, t := range results.Data {
 		fmt.Println(t)
 	}
 }
 
-func EnginesCall(){
+func EnginesCall() {
 	req := gpt3.EnginesRequest{}
-	cl := gpt3.ApiClient{}
+	cl := cmd.ApiClient{}
 	cl.Setup(gpt3.DAVINCI)
 
 	response, err := cl.Call(&req)
@@ -146,14 +146,14 @@ func EnginesCall(){
 	data := *response
 	results, _ := data.(*gpt3.EnginesResponse)
 
-	for _,t  := range results.Data{
+	for _, t := range results.Data {
 		fmt.Println(t)
 	}
 }
 
-func FilesCall(){
+func FilesCall() {
 	req := gpt3.FilesRequest{}
-	cl := gpt3.ApiClient{}
+	cl := cmd.ApiClient{}
 	cl.Setup(gpt3.CURIE)
 
 	response, err := cl.Call(&req)
@@ -164,13 +164,12 @@ func FilesCall(){
 	data := *response
 	results, _ := data.(*gpt3.FilesResponse)
 
-	for _,t  := range results.Data{
+	for _, t := range results.Data {
 		fmt.Println(t)
 	}
 }
 
-
-func contentFilterCall(){
+func contentFilterCall() {
 	query, err := ioutil.ReadFile("prompts.txt")
 	if err != nil {
 		panic(err)
@@ -181,10 +180,10 @@ func contentFilterCall(){
 		MaxTokens:   1,
 		TopP:        0,
 		Temperature: 0,
-		Logprobs: 10,
+		Logprobs:    10,
 	}
 
-	cl := gpt3.ApiClient{}
+	cl := cmd.ApiClient{}
 	cl.Setup(gpt3.DAVINCI_INSTRUCT_BETA, gpt3.DAVINCI)
 
 	response, err := cl.Call(&req)
@@ -195,7 +194,7 @@ func contentFilterCall(){
 	data := *response
 	results, _ := data.(*gpt3.CompletionResponse)
 	jsn, err := json.MarshalIndent(results, "", "  ")
-	if err != nil{
+	if err != nil {
 		log.Fatalln(err)
 	}
 	fmt.Print(string(jsn), "\n")
