@@ -95,6 +95,6 @@ func prepareRequestHeaders(apiKey string, req *http.Request) {
 func (a *Gpt3Client) Setup(engines ...string) {
 	a.apiKey = internal.Config.Gpt3ApiKey
 	a.apiVersion = internal.Config.Gpt3ApiVersion
-	a.apiBaseUrl = internal.Config.Gpt3ApiKey
+	a.apiBaseUrl = internal.Config.Gpt3BaseUrl
 	a.engines = append(a.engines, engines...)
 }
