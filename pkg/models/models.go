@@ -110,7 +110,7 @@ type FilesResponse struct {
 	Object string `json:"object"`
 }
 
-func (r *FilesRequest) attachResponse() Response {
+func (r *FilesRequest) AttachResponse() Response {
 	resp := &FilesResponse{}
 	return resp
 }
@@ -119,7 +119,7 @@ func (r *FilesResponse) GetBody() Response {
 	return r
 }
 
-func (r *FilesRequest) getRequestMeta(config RequestConfig) (string, string) {
+func (r *FilesRequest) GetRequestMeta(config RequestConfig) (string, string) {
 	return getRequest, fmt.Sprintf("%s/%s/files", config.BaseUrl, config.EndpointVersion)
 }
 
@@ -133,7 +133,7 @@ type FileResponse struct {
 	File
 }
 
-func (r *FileRequest) attachResponse() Response {
+func (r *FileRequest) AttachResponse() Response {
 	resp := &FileResponse{}
 	return resp
 }
@@ -142,7 +142,7 @@ func (r *FileResponse) GetBody() Response {
 	return r
 }
 
-func (r *FileRequest) getRequestMeta(config RequestConfig) (string, string) {
+func (r *FileRequest) GetRequestMeta(config RequestConfig) (string, string) {
 	return postRequest, fmt.Sprintf("%s/%s/files", config.BaseUrl, config.EndpointVersion)
 }
 
@@ -171,12 +171,12 @@ type CompletionResponse struct {
 	Choices []Choices `json:"choices"`
 }
 
-func (r *CompletionRequest) attachResponse() Response {
+func (r *CompletionRequest) AttachResponse() Response {
 	resp := &CompletionResponse{}
 	return resp
 }
 
-func (r *CompletionRequest) getRequestMeta(config RequestConfig) (string, string) {
+func (r *CompletionRequest) GetRequestMeta(config RequestConfig) (string, string) {
 	return postRequest, fmt.Sprintf("%s/%s/engines/%s/completions", config.BaseUrl, config.EndpointVersion, config.Engine)
 }
 
@@ -196,12 +196,12 @@ type ContentFilterRequest struct {
 	FrequencyPenalty float32 `json:"frequency_penalty,omitempty"`
 }
 
-func (r *ContentFilterRequest) attachResponse() Response {
+func (r *ContentFilterRequest) AttachResponse() Response {
 	resp := &CompletionResponse{}
 	return resp
 }
 
-func (r *ContentFilterRequest) getRequestMeta(config RequestConfig) (string, string) {
+func (r *ContentFilterRequest) GetRequestMeta(config RequestConfig) (string, string) {
 	return postRequest, fmt.Sprintf("%s/%s/engines/content-filter-alpha-c4/completions", config.BaseUrl, config.EndpointVersion)
 }
 
@@ -220,12 +220,12 @@ type SearchResponse struct {
 	Object string       `json:"object"`
 }
 
-func (r *SearchRequest) attachResponse() Response {
+func (r *SearchRequest) AttachResponse() Response {
 	resp := &SearchResponse{}
 	return resp
 }
 
-func (r *SearchRequest) getRequestMeta(config RequestConfig) (string, string) {
+func (r *SearchRequest) GetRequestMeta(config RequestConfig) (string, string) {
 	return postRequest, fmt.Sprintf("%s/%s/engines/%s/search", config.BaseUrl, config.EndpointVersion, config.Engine)
 }
 
@@ -244,12 +244,12 @@ func (e EnginesResponse) GetBody() Response {
 	return e
 }
 
-func (r *EnginesRequest) attachResponse() Response {
+func (r *EnginesRequest) AttachResponse() Response {
 	resp := &EnginesResponse{}
 	return resp
 }
 
-func (r *EnginesRequest) getRequestMeta(config RequestConfig) (string, string) {
+func (r *EnginesRequest) GetRequestMeta(config RequestConfig) (string, string) {
 	return getRequest, fmt.Sprintf("%s/%s/engines", config.BaseUrl, config.EndpointVersion)
 }
 
@@ -279,12 +279,12 @@ type ClassificationResponse struct {
 	SelectedExamples []ClassificationExamples `json:"selected_examples"`
 }
 
-func (r *ClassificationRequest) attachResponse() Response {
+func (r *ClassificationRequest) AttachResponse() Response {
 	resp := &ClassificationResponse{}
 	return resp
 }
 
-func (r *ClassificationRequest) getRequestMeta(config RequestConfig) (string, string) {
+func (r *ClassificationRequest) GetRequestMeta(config RequestConfig) (string, string) {
 	return postRequest, fmt.Sprintf("%s/%s/classifications", config.BaseUrl, config.EndpointVersion)
 }
 
@@ -322,12 +322,12 @@ type AnswerResponse struct {
 	SelectedDocuments []Document         `json:"selected_documents"`
 }
 
-func (r *AnswerRequest) attachResponse() Response {
+func (r *AnswerRequest) AttachResponse() Response {
 	resp := &AnswerResponse{}
 	return resp
 }
 
-func (r *AnswerRequest) getRequestMeta(config RequestConfig) (string, string) {
+func (r *AnswerRequest) GetRequestMeta(config RequestConfig) (string, string) {
 	return postRequest, fmt.Sprintf("%s/%s/answers", config.BaseUrl, config.EndpointVersion)
 }
 
